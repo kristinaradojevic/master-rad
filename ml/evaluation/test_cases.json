@@ -1,0 +1,13 @@
+[
+  {
+    "court_name": "Osnovni sud u Novom Sadu",
+    "case_number": "P 123/2026",
+    "judge_name": "Petar Petrović",
+    "plaintiff": "Marko Marković iz Novog Sada",
+    "defendant": "Privredno društvo Primer d.o.o. Novi Sad",
+    "claim_description": "Tužilac zahteva isplatu duga u iznosu od 250.000,00 dinara po osnovu ugovora o delu zaključenog 15.03.2025. godine, sa zakonskom zateznom kamatom.",
+    "established_facts": "Uvidom u ugovor o delu i saslušanjem stranaka utvrđeno je da je tužilac izvršio ugovorene radove u celosti, da je tuženi radove primio bez primedbi, ali da ugovorena naknada nije isplaćena ni nakon pisane opomene.",
+    "decision": "Usvaja se tužbeni zahtev u celosti. Tuženi se obavezuje da tužiocu isplati 250.000,00 dinara sa zakonskom zateznom kamatom od 15.04.2025. do isplate, kao i troškove postupka.",
+    "verdict_date": "10.07.2026"
+  }
+]

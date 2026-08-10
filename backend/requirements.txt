@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+pydantic
+pydantic-settings
+jinja2
+weasyprint
+openai
+anthropic
+python-dotenv
+sqlalchemy
+python-docx

@@ -1,0 +1,44 @@
+# Secrets
+.env
+.env.local
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Node / Next.js
+node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/coverage/
+frontend/.pnp
+frontend/.pnp.*
+frontend/.yarn/*
+!frontend/.yarn/patches
+!frontend/.yarn/plugins
+!frontend/.yarn/releases
+!frontend/.yarn/versions
+frontend/.vercel
+frontend/*.tsbuildinfo
+frontend/next-env.d.ts
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+*.pem
+
+# Real verdict data must never be committed (contains personal data)
+ml/data/raw/*
+ml/data/extracted/*
+ml/data/anonymized/*
+!ml/data/**/.gitkeep
+
+# Experiment outputs
+ml/evaluation/results/*
+!ml/evaluation/results/.gitkeep
+
+# OS
+.DS_Store
