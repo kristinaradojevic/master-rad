@@ -34,6 +34,7 @@ yarn-error.log*
 ml/data/raw/*
 ml/data/extracted/*
 ml/data/anonymized/*
+ml/data/fewshot/*
 !ml/data/**/.gitkeep
 
 # Experiment outputs

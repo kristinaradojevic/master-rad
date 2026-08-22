@@ -4,12 +4,17 @@ export interface VerdictInput {
   court_name: string;
   case_number: string;
   judge_name: string;
-  plaintiff: string;
-  defendant: string;
-  claim_description: string;
-  established_facts: string;
-  decision: string;
+  court_reporter_name: string;
   verdict_date: string;
+  defendant_name: string;
+  defendant_jmbg: string;
+  defendant_residence: string;
+  defendant_additional_info: string;
+  criminal_offense: string;
+  charge_description: string;
+  established_facts: string;
+  decision_type: string;
+  sentence: string;
 }
 
 export interface ModelInfo {

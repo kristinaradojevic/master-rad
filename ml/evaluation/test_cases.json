@@ -1,13 +1,17 @@
 [
   {
     "court_name": "Osnovni sud u Novom Sadu",
-    "case_number": "P 123/2026",
+    "case_number": "K 45/2026",
     "judge_name": "Petar Petrović",
-    "plaintiff": "Marko Marković iz Novog Sada",
-    "defendant": "Privredno društvo Primer d.o.o. Novi Sad",
-    "claim_description": "Tužilac zahteva isplatu duga u iznosu od 250.000,00 dinara po osnovu ugovora o delu zaključenog 15.03.2025. godine, sa zakonskom zateznom kamatom.",
-    "established_facts": "Uvidom u ugovor o delu i saslušanjem stranaka utvrđeno je da je tužilac izvršio ugovorene radove u celosti, da je tuženi radove primio bez primedbi, ali da ugovorena naknada nije isplaćena ni nakon pisane opomene.",
-    "decision": "Usvaja se tužbeni zahtev u celosti. Tuženi se obavezuje da tužiocu isplati 250.000,00 dinara sa zakonskom zateznom kamatom od 15.04.2025. do isplate, kao i troškove postupka.",
-    "verdict_date": "10.07.2026"
+    "court_reporter_name": "Ana Anić",
+    "verdict_date": "10.07.2026",
+    "defendant_name": "Marko Marković",
+    "defendant_jmbg": "0101990710015",
+    "defendant_residence": "Novi Sad, ul. Primer 12",
+    "criminal_offense": "krivično delo krađe iz čl. 203 st. 1 KZ",
+    "charge_description": "Okrivljeni se tereti da je 15.03.2025. godine u Novom Sadu, iz prodavnice 'Primer' oduzeo robu u vrednosti od 45.000,00 dinara u nameri da njenim prisvajanjem sebi pribavi protivpravnu imovinsku korist.",
+    "established_facts": "Uvidom u izveštaj obezbeđenja, video-snimak i iskaze svedoka utvrđeno je da je okrivljeni oduzeo robu bez plaćanja i napustio prodavnicu, te da je roba naknadno pronađena u njegovom posedu.",
+    "decision_type": "osuđujuća",
+    "sentence": "Okrivljeni se osuđuje na kaznu zatvora u trajanju od 4 (četiri) meseca, uz obavezu naknade štete oštećenom u iznosu od 45.000,00 dinara."
   }
 ]

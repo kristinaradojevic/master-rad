@@ -22,6 +22,42 @@ RULES: list[tuple[str, str]] = [
     (r"[\w.+-]+@[\w-]+\.[\w.]+", "[EMAIL]"),
 ]
 
+# Name redaction anchored on the role keywords that consistently introduce a
+# person's name in these verdicts. Matches 1-3 name-like words right after
+# the keyword, in either "Title Case" or "ALL CAPS" form (Serbian verdicts
+# commonly write party/judge names in all caps), including hyphenated
+# surnames (e.g. TOMIĆ-JOKIĆ). Keywords are matched as stems (\w*) so a
+# single rule covers all grammatical cases (okrivljenog/okrivljenom/...).
+#
+# This is a heuristic, not real NER — it only catches names immediately
+# after a recognized keyword, so names introduced in other word orders
+# (e.g. "X i Y, advokati") or without a nearby keyword will slip through.
+# It reduces manual redaction work; it does not replace the manual review
+# step described in the module docstring.
+_UPPER = "А-ЯЂЈЉЊЋЏ"
+_LOWER = "а-яђјљњћџ"
+_NAME_WORD = rf"(?:[{_UPPER}][{_LOWER}]+|[{_UPPER}]{{2,}})(?:-(?:[{_UPPER}][{_LOWER}]+|[{_UPPER}]{{2,}}))?"
+_NAME = rf"{_NAME_WORD}(?:\s{_NAME_WORD}){{0,2}}"
+_ROLE_STEMS = [
+    "окривљен",
+    "оптужен",
+    "оштећен",
+    "сведок",
+    "поротник",
+    "бранил", "адвокат",
+    "судиј",
+    "записничар",
+]
+RULES += [
+    # "(?i:...)" makes only the keyword stem case-insensitive (verdicts mix
+    # Title Case body text with ALL CAPS headers like "ОПТУЖЕНИ:") — the name
+    # part stays case-sensitive, since requiring a capital letter is exactly
+    # what tells a name apart from an ordinary lowercase word.
+    # ":?\s+" (not just a single space) so this also catches the header
+    # style, where the name follows on its own line after blank lines.
+    (rf"(\b(?i:{stem})\w{{0,4}}:?\s+){_NAME}", r"\1[IME]") for stem in _ROLE_STEMS
+]
+
 
 def anonymize(text: str) -> str:
     for pattern, replacement in RULES:
