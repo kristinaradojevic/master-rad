@@ -33,8 +33,8 @@ yarn-error.log*
 # Real verdict data must never be committed (contains personal data)
 ml/data/raw/*
 ml/data/extracted/*
-ml/data/anonymized/*
 ml/data/fewshot/*
+ml/data/embeddings.json
 !ml/data/**/.gitkeep
 
 # Experiment outputs

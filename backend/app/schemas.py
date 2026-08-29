@@ -43,11 +43,22 @@ class VerdictInput(BaseModel):
 class GenerateRequest(BaseModel):
     input: VerdictInput
     model: str = Field(..., description="Model key from /api/models")
+    use_rag: bool = Field(
+        default=False,
+        description=(
+            "If true, pick few-shot examples by embedding similarity to this case "
+            "instead of the static example set — requires ml/data/embeddings.json."
+        ),
+    )
+    num_examples: int = Field(
+        default=3, ge=1, le=10, description="How many few-shot verdict examples to include."
+    )
 
 
 class GenerateResponse(BaseModel):
     model: str
     text: str
+    used_rag: bool
 
 
 class ModelInfo(BaseModel):

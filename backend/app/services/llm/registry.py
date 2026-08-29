@@ -25,10 +25,46 @@ _REGISTRY: dict[str, dict] = {
         "factory": lambda: OpenAIProvider("gpt-4o-mini"),
         "env_key": "OPENAI_API_KEY",
     },
+    "gpt-5.6-sol": {
+        "provider": "openai",
+        "label": "GPT-5.6 Sol",
+        "factory": lambda: OpenAIProvider("gpt-5.6-sol"),
+        "env_key": "OPENAI_API_KEY",
+    },
+    "gpt-5.6-terra": {
+        "provider": "openai",
+        "label": "GPT-5.6 Terra",
+        "factory": lambda: OpenAIProvider("gpt-5.6-terra"),
+        "env_key": "OPENAI_API_KEY",
+    },
+    "gpt-5.6-luna": {
+        "provider": "openai",
+        "label": "GPT-5.6 Luna",
+        "factory": lambda: OpenAIProvider("gpt-5.6-luna"),
+        "env_key": "OPENAI_API_KEY",
+    },
     "claude-opus-4-8": {
         "provider": "anthropic",
         "label": "Claude Opus 4.8",
         "factory": lambda: AnthropicProvider("claude-opus-4-8"),
+        "env_key": "ANTHROPIC_API_KEY",
+    },
+    "claude-opus-5": {
+        "provider": "anthropic",
+        "label": "Claude Opus 5",
+        "factory": lambda: AnthropicProvider("claude-opus-5"),
+        "env_key": "ANTHROPIC_API_KEY",
+    },
+    "claude-sonnet-5": {
+        "provider": "anthropic",
+        "label": "Claude Sonnet 5",
+        "factory": lambda: AnthropicProvider("claude-sonnet-5"),
+        "env_key": "ANTHROPIC_API_KEY",
+    },
+    "claude-haiku-4-5": {
+        "provider": "anthropic",
+        "label": "Claude Haiku 4.5",
+        "factory": lambda: AnthropicProvider("claude-haiku-4-5"),
         "env_key": "ANTHROPIC_API_KEY",
     },
 }

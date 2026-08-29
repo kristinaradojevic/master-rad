@@ -10,7 +10,7 @@ and compared for the thesis evaluation.
 ```
 backend/    FastAPI — prompt building, LLM providers, PDF rendering (WeasyPrint)
 frontend/   Next.js — the judge's form, verdict review/editing, PDF download
-ml/         Data preparation (docx extraction, anonymization) and model comparison
+ml/         Data preparation (docx extraction) and model comparison
 docs/       Thesis notes, prompt experiments
 ```
 
@@ -49,8 +49,7 @@ is missing from `.env` are hidden automatically.
 
 1. Put `.docx` files in `ml/data/raw/` (git-ignored — never commit them).
 2. `python ml/preprocess/extract_docx.py` → plain text in `ml/data/extracted/`.
-3. `python ml/preprocess/anonymize.py` → `ml/data/anonymized/` (review manually!).
-4. Use anonymized texts as few-shot examples in `backend/app/services/prompt.py`,
+3. Use extracted texts as few-shot examples in `backend/app/services/prompt.py`,
    or later as fine-tuning data.
 
 ## Model comparison (thesis experiments)

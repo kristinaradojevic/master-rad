@@ -150,6 +150,8 @@ export default function Home() {
   const [input, setInput] = useState<VerdictInput>(EMPTY_INPUT);
   const [models, setModels] = useState<ModelInfo[]>([]);
   const [model, setModel] = useState<string>("");
+  const [useRag, setUseRag] = useState(false);
+  const [numExamples, setNumExamples] = useState(3);
   const [verdictText, setVerdictText] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -176,7 +178,7 @@ export default function Home() {
     setLoading(true);
     setError(null);
     try {
-      setVerdictText(await generateVerdict(input, model));
+      setVerdictText(await generateVerdict(input, model, useRag, numExamples));
     } catch (e) {
       setError(e instanceof Error ? e.message : "Greška pri generisanju");
     } finally {
@@ -228,6 +230,30 @@ export default function Home() {
               </option>
             ))}
           </select>
+        </label>
+
+        <label className="flex items-center gap-2 pb-2">
+          <input
+            type="checkbox"
+            checked={useRag}
+            onChange={(e) => setUseRag(e.target.checked)}
+          />
+          <span className="text-sm font-medium">
+            Koristi RAG (primeri po sličnosti umesto fiksnog seta)
+          </span>
+        </label>
+
+        <label className="block">
+          <span className="mb-1 block text-sm font-medium">Broj primera</span>
+          <input
+            type="number"
+            min={1}
+            max={10}
+            disabled={!useRag}
+            className="w-20 rounded border border-gray-300 px-3 py-2 disabled:opacity-50"
+            value={numExamples}
+            onChange={(e) => setNumExamples(Number(e.target.value))}
+          />
         </label>
 
         <button

@@ -3,6 +3,7 @@ from fastapi import APIRouter, HTTPException
 from ..schemas import GenerateRequest, GenerateResponse, ModelInfo
 from ..services.llm.registry import available_models, get_provider
 from ..services.prompt import SYSTEM_PROMPT, build_user_prompt
+from ..services.rag import RagUnavailable
 
 router = APIRouter(prefix="/api", tags=["generate"])
 
@@ -19,6 +20,12 @@ def generate_verdict(request: GenerateRequest):
     except KeyError:
         raise HTTPException(status_code=404, detail=f"Unknown model: {request.model}")
 
-    user_prompt = build_user_prompt(request.input)
+    try:
+        user_prompt = build_user_prompt(
+            request.input, use_rag=request.use_rag, num_examples=request.num_examples
+        )
+    except RagUnavailable as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
     text = provider.generate(SYSTEM_PROMPT, user_prompt)
-    return GenerateResponse(model=request.model, text=text)
+    return GenerateResponse(model=request.model, text=text, used_rag=request.use_rag)

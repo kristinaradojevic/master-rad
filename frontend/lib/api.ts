@@ -31,14 +31,19 @@ export async function fetchModels(): Promise<ModelInfo[]> {
 
 export async function generateVerdict(
   input: VerdictInput,
-  model: string
+  model: string,
+  useRag: boolean,
+  numExamples: number
 ): Promise<string> {
   const res = await fetch(`${API_BASE}/api/generate`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ input, model }),
+    body: JSON.stringify({ input, model, use_rag: useRag, num_examples: numExamples }),
   });
-  if (!res.ok) throw new Error(`Generation failed (${res.status})`);
+  if (!res.ok) {
+    const detail = await res.json().catch(() => null);
+    throw new Error(detail?.detail ?? `Generation failed (${res.status})`);
+  }
   const data = await res.json();
   return data.text;
 }

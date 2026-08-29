@@ -32,17 +32,31 @@ def extract_legacy_doc(path: Path, out_path: Path) -> None:
 
 def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
+    failed = []
 
     for docx_path in sorted(RAW_DIR.glob("*.docx")):
-        text = extract_text(docx_path)
-        out_path = OUT_DIR / (docx_path.stem + ".txt")
-        out_path.write_text(text, encoding="utf-8")
-        print(f"{docx_path.name} -> {out_path.name} ({len(text)} chars)")
+        try:
+            text = extract_text(docx_path)
+            out_path = OUT_DIR / (docx_path.stem + ".txt")
+            out_path.write_text(text, encoding="utf-8")
+            print(f"{docx_path.name} -> {out_path.name} ({len(text)} chars)")
+        except Exception as e:
+            print(f"FAILED: {docx_path.name} ({e})")
+            failed.append(docx_path.name)
 
     for doc_path in sorted(RAW_DIR.glob("*.doc")):
-        out_path = OUT_DIR / (doc_path.stem + ".txt")
-        extract_legacy_doc(doc_path, out_path)
-        print(f"{doc_path.name} -> {out_path.name} ({out_path.stat().st_size} bytes)")
+        try:
+            out_path = OUT_DIR / (doc_path.stem + ".txt")
+            extract_legacy_doc(doc_path, out_path)
+            print(f"{doc_path.name} -> {out_path.name} ({out_path.stat().st_size} bytes)")
+        except Exception as e:
+            print(f"FAILED: {doc_path.name} ({e})")
+            failed.append(doc_path.name)
+
+    if failed:
+        print(f"\n{len(failed)} file(s) failed to extract:")
+        for name in failed:
+            print(f"  - {name}")
 
 
 if __name__ == "__main__":

@@ -1,13 +1,15 @@
 """Prompt building for verdict generation.
 
 This is where most of the experimentation for the thesis will happen:
-system prompt wording, few-shot examples from real (anonymized) verdicts,
-and later possibly retrieved similar verdicts (RAG).
+system prompt wording, and few-shot examples from real verdicts — either a
+static hand-picked set, or retrieved by embedding similarity (RAG, see
+services/rag.py), selectable per request via GenerateRequest.use_rag.
 """
 
 from datetime import date
 from pathlib import Path
 
+from . import rag
 from ..schemas import VerdictInput
 
 SYSTEM_PROMPT = """\
@@ -27,18 +29,18 @@ imena, datume ni iznose koji nisu navedeni. Ako neki podatak nedostaje,
 označi mesto sa [NEDOSTAJE PODATAK].
 """
 
-# Up to a few hand-reviewed, anonymized real verdicts used as few-shot style
-# examples. Loaded from disk (never hardcoded here) so real verdict text never
-# ends up committed to git — see ml/data/fewshot/ (git-ignored) and the
-# README section on working with real verdicts.
+# Up to a few hand-reviewed real verdicts used as few-shot style examples.
+# Loaded from disk (never hardcoded here) so real verdict text never ends up
+# committed to git — see ml/data/fewshot/ (git-ignored) and the README
+# section on working with real verdicts.
 _FEWSHOT_DIR = Path(__file__).resolve().parents[3] / "ml" / "data" / "fewshot"
-_MAX_FEWSHOT_EXAMPLES = 3
+DEFAULT_NUM_EXAMPLES = 3
 
 
-def _load_fewshot_examples() -> list[str]:
+def _load_static_fewshot_examples(k: int) -> list[str]:
     if not _FEWSHOT_DIR.exists():
         return []
-    files = sorted(_FEWSHOT_DIR.glob("*.txt"))[:_MAX_FEWSHOT_EXAMPLES]
+    files = sorted(_FEWSHOT_DIR.glob("*.txt"))[:k]
     return [f.read_text(encoding="utf-8") for f in files]
 
 
@@ -53,24 +55,27 @@ def _format_serbian_date(value: str) -> str:
     return f"{d.day:02d}.{d.month:02d}.{d.year}."
 
 
-def build_user_prompt(data: VerdictInput) -> str:
+def build_user_prompt(
+    data: VerdictInput, use_rag: bool = False, num_examples: int = DEFAULT_NUM_EXAMPLES
+) -> str:
     additional_info_line = (
         f"Dodatni podaci o okrivljenom: {data.defendant_additional_info}\n"
         if data.defendant_additional_info
         else ""
     )
-    examples = _load_fewshot_examples()
+    examples = (
+        rag.retrieve_similar(data, k=num_examples)
+        if use_rag
+        else _load_static_fewshot_examples(num_examples)
+    )
     examples_block = ""
     if examples:
         joined = "\n\n---\n\n".join(examples)
         examples_block = f"""\
-Primeri stvarnih presuda (anonimizovani, koristi ih samo kao uzor za stil,
-strukturu i formalni jezik — ne za činjenice). Oznake u zagradama poput
-[IME] ili [JMBG] su artefakti anonimizacije originalnih dokumenata, ne deo
-uobičajenog stila presude — nikad ih ne preslikavaj u svoju presudu. Pominji
-samo osobe i uloge (npr. sudije porotnike, zapisničara) koje su izričito
-navedene u podacima ispod; ne izmišljaj dodatne osobe da bi pratio strukturu
-primera:
+Primeri stvarnih presuda (koristi ih samo kao uzor za stil, strukturu i
+formalni jezik — ne za činjenice). Pominji samo osobe i uloge (npr. sudije
+porotnike, zapisničara) koje su izričito navedene u podacima ispod; ne
+izmišljaj dodatne osobe da bi pratio strukturu primera:
 
 {joined}
 

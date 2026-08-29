@@ -9,3 +9,4 @@ anthropic
 python-dotenv
 sqlalchemy
 python-docx
+tiktoken
