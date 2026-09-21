@@ -35,6 +35,9 @@ ml/data/raw/*
 ml/data/extracted/*
 ml/data/fewshot/*
 ml/data/embeddings.json
+ml/data/split.json
+ml/data/structured/*
+ml/data/finetune/*
 !ml/data/**/.gitkeep
 
 # Experiment outputs

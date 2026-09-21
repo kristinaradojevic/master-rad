@@ -69,6 +69,18 @@ _REGISTRY: dict[str, dict] = {
     },
 }
 
+# The fine-tuned model's id is only known once ml/preprocess/run_finetune_job.py
+# finishes (see ml/preprocess/prepare_finetune_data.py for how it's trained),
+# so it's registered from an env var rather than hardcoded like the base models.
+_finetuned_model_id = os.getenv("FINETUNED_MODEL_ID")
+if _finetuned_model_id:
+    _REGISTRY["gpt-4o-mini-finetuned"] = {
+        "provider": "openai",
+        "label": "GPT-4o mini (fine-tuned)",
+        "factory": lambda: OpenAIProvider(_finetuned_model_id),
+        "env_key": "OPENAI_API_KEY",
+    }
+
 
 def available_models() -> list[dict]:
     return [

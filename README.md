@@ -49,8 +49,33 @@ is missing from `.env` are hidden automatically.
 
 1. Put `.docx` files in `ml/data/raw/` (git-ignored — never commit them).
 2. `python ml/preprocess/extract_docx.py` → plain text in `ml/data/extracted/`.
-3. Use extracted texts as few-shot examples in `backend/app/services/prompt.py`,
-   or later as fine-tuning data.
+3. `python ml/preprocess/split_corpus.py` → splits the corpus 80/20 into a
+   fine-tuning set and a RAG pool (`ml/data/split.json`), so the two methods
+   are never evaluated on overlapping examples.
+4. Use the RAG pool as few-shot examples (`ml/preprocess/embed_verdicts.py`,
+   see below) and the fine-tuning set to train a custom model (see
+   Fine-tuning below).
+
+## Fine-tuning (thesis experiments)
+
+Trains a custom `gpt-4o-mini` on the fine-tuning half of the corpus
+(`split_corpus.py`'s `finetune` list), so it can be compared against plain
+prompting and RAG for the same cases.
+
+Real verdicts only exist as full text, not as the structured fields a judge
+would type into the form, so the pipeline first reverse-extracts those
+fields with an LLM before building (input → verdict) training pairs:
+
+```bash
+python ml/preprocess/extract_structured_fields.py   # LLM extracts VerdictInput fields per verdict
+python ml/preprocess/prepare_finetune_data.py        # builds train.jsonl / valid.jsonl
+python ml/preprocess/run_finetune_job.py             # uploads + trains, polls until done
+```
+
+When the job succeeds, copy the printed model id into `FINETUNED_MODEL_ID`
+in `backend/.env` — it then appears in `/api/models` as
+"GPT-4o mini (fine-tuned)" like any other model, selectable from the
+frontend the same way as the RAG toggle.
 
 ## Model comparison (thesis experiments)
 

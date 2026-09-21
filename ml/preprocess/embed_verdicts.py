@@ -1,9 +1,12 @@
 """Embed real verdict texts for RAG-based few-shot retrieval.
 
-Reads every .txt in ml/data/extracted/, embeds it with OpenAI's
-text-embedding-3-small, and caches the result in ml/data/embeddings.json.
-Rerun this whenever ml/data/extracted/ changes — backend/app/services/rag.py
-reads the cache, it never embeds the corpus itself.
+Reads every .txt in ml/data/extracted/ that belongs to the RAG pool half of
+the train/RAG split (see split_corpus.py — the other half is reserved for
+fine-tuning, so the two methods are never compared on overlapping examples),
+embeds it with OpenAI's text-embedding-3-small, and caches the result in
+ml/data/embeddings.json. Rerun this whenever ml/data/extracted/ or
+ml/data/split.json changes — backend/app/services/rag.py reads the cache,
+it never embeds the corpus itself.
 
 The API caps input at 8192 tokens but several real verdicts run much longer,
 so long documents are split into multiple chunks, each embedded separately
@@ -28,6 +31,7 @@ load_dotenv(REPO_ROOT / "backend" / ".env")
 
 EXTRACTED_DIR = REPO_ROOT / "ml" / "data" / "extracted"
 OUT_FILE = REPO_ROOT / "ml" / "data" / "embeddings.json"
+SPLIT_FILE = REPO_ROOT / "ml" / "data" / "split.json"
 EMBEDDING_MODEL = "text-embedding-3-small"
 # The API hard-caps input at 8192 tokens per call; leave some margin under
 # that since token/char ratio varies a bit across documents.
@@ -46,6 +50,15 @@ def main():
     files = sorted(EXTRACTED_DIR.glob("*.txt"))
     if not files:
         sys.exit(f"No .txt files found in {EXTRACTED_DIR}")
+
+    if SPLIT_FILE.exists():
+        rag_pool = set(json.loads(SPLIT_FILE.read_text(encoding="utf-8"))["rag_pool"])
+        before = len(files)
+        files = [f for f in files if f.name in rag_pool]
+        print(f"Restricting to RAG pool ({SPLIT_FILE.name}): {len(files)}/{before} files")
+    else:
+        print(f"Warning: {SPLIT_FILE} not found, embedding the whole corpus. "
+              "Run split_corpus.py first to keep RAG and fine-tuning data disjoint.")
 
     client = OpenAI()  # reads OPENAI_API_KEY from the environment
     entries = []
