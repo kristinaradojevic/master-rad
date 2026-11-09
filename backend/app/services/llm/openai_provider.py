@@ -6,9 +6,12 @@ from .base import LLMProvider
 class OpenAIProvider(LLMProvider):
     provider_name = "openai"
 
-    def __init__(self, model: str):
+    def __init__(self, model: str, base_url: str | None = None):
         self.model = model
-        self.client = OpenAI()  # reads OPENAI_API_KEY from the environment
+        # base_url lets this same provider talk to any OpenAI-compatible
+        # endpoint — used for the local MLX server serving the fine-tuned
+        # model (see llm/registry.py), which needs no real API key.
+        self.client = OpenAI(base_url=base_url, api_key="not-needed" if base_url else None)
 
     def generate(self, system_prompt: str, user_prompt: str) -> str:
         response = self.client.chat.completions.create(

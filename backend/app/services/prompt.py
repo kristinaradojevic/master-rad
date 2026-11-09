@@ -29,6 +29,20 @@ imena, datume ni iznose koji nisu navedeni. Ako neki podatak nedostaje,
 označi mesto sa [NEDOSTAJE PODATAK].
 """
 
+# Shared between ml/preprocess/prepare_finetune_data.py (training) and
+# llm/local_mlx_provider.py (serving) — the locally fine-tuned model's
+# training data splits long verdicts into chunks using this exact
+# continuation prompt, so generation has to request continuations the same
+# way to match what the model actually learned. Keep the wording identical
+# in both places.
+CONTINUATION_TEMPLATE = """
+
+Presuda je delimično napisana. Ovo je kraj teksta koji je već napisan:
+
+{tail}
+
+[Nastavi tačno od ovog mesta. Ne ponavljaj prethodni tekst.]"""
+
 # Up to a few hand-reviewed real verdicts used as few-shot style examples.
 # Loaded from disk (never hardcoded here) so real verdict text never ends up
 # committed to git — see ml/data/fewshot/ (git-ignored) and the README

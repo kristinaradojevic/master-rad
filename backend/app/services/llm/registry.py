@@ -11,6 +11,7 @@ from functools import lru_cache
 from .base import LLMProvider
 from .openai_provider import OpenAIProvider
 from .anthropic_provider import AnthropicProvider
+from .local_mlx_provider import LocalMLXProvider
 
 _REGISTRY: dict[str, dict] = {
     "gpt-4o": {
@@ -69,16 +70,28 @@ _REGISTRY: dict[str, dict] = {
     },
 }
 
-# The fine-tuned model's id is only known once ml/preprocess/run_finetune_job.py
-# finishes (see ml/preprocess/prepare_finetune_data.py for how it's trained),
-# so it's registered from an env var rather than hardcoded like the base models.
-_finetuned_model_id = os.getenv("FINETUNED_MODEL_ID")
-if _finetuned_model_id:
-    _REGISTRY["gpt-4o-mini-finetuned"] = {
-        "provider": "openai",
-        "label": "GPT-4o mini (fine-tuned)",
-        "factory": lambda: OpenAIProvider(_finetuned_model_id),
-        "env_key": "OPENAI_API_KEY",
+# The fine-tuned model runs locally via MLX (OpenAI's fine-tuning API was
+# shut down for self-serve use in 2026 — see README's Fine-tuning section
+# and ml/finetune/train_lora.py). It's served by `mlx_lm.server`, which
+# speaks the OpenAI chat-completions protocol, but uses LocalMLXProvider
+# rather than plain OpenAIProvider — see that module's docstring for why a
+# single call isn't enough for this particular model. Only registered once
+# LOCAL_MLX_BASE_URL is set, i.e. once the server is actually meant to be
+# running.
+#
+# mlx_lm.server rejects any "model" value in the request body that isn't
+# one it recognizes (either the path/repo it was started with, or
+# something that resolves to that same path) — it's not just a label, so
+# this has to match how the server was launched (see README), not the
+# registry key above.
+_local_mlx_base_url = os.getenv("LOCAL_MLX_BASE_URL")
+_local_mlx_model = os.getenv("LOCAL_MLX_MODEL", "ml/data/finetune/fused_model")
+if _local_mlx_base_url:
+    _REGISTRY["local-finetuned-qwen"] = {
+        "provider": "local-mlx",
+        "label": "Qwen 2.5 7B (fine-tuned, local)",
+        "factory": lambda: LocalMLXProvider(_local_mlx_model, base_url=_local_mlx_base_url),
+        "env_key": "LOCAL_MLX_BASE_URL",
     }
 
 

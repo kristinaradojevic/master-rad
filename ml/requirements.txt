@@ -1,0 +1,7 @@
+# Extra dependencies for local fine-tuning (ml/finetune/), on top of
+# backend/requirements.txt. Apple Silicon only (MLX uses the Mac's GPU via
+# Metal — it will not install/run on Intel Macs, Linux or Windows).
+#
+# Install into the same venv already used for the ml/ scripts:
+#   backend/.venv/bin/pip install -r ml/requirements.txt
+mlx-lm
